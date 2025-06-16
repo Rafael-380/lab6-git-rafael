@@ -10,16 +10,18 @@ int main() {
     sf::Clock clock;
 
     // Criar personagem
-    AnimatedSprite hero(10, "Character/character.png");
+    AnimatedSprite hero(10, "character.png");
     hero.setPosition(100, 500);
+    hero.setScale(2,2);
 
     // Adicionar frames
-    hero.add_animation_frame(sf::IntRect(150, 0, 50, 37));
-    hero.add_animation_frame(sf::IntRect(200, 0, 50, 37));
-    hero.add_animation_frame(sf::IntRect(250, 0, 50, 37));
-    hero.add_animation_frame(sf::IntRect(300, 0, 50, 37));
-    hero.add_animation_frame(sf::IntRect(350, 0, 50, 37));
-    hero.add_animation_frame(sf::IntRect(400, 0, 50, 37));
+    hero.add_animation_frame(sf::IntRect(15, 0, 20, 37));
+    hero.add_animation_frame(sf::IntRect(165, 0, 20, 37));
+    hero.add_animation_frame(sf::IntRect(215, 0, 20, 37));
+    hero.add_animation_frame(sf::IntRect(265, 0, 20, 37));
+    hero.add_animation_frame(sf::IntRect(315, 0, 20, 37));
+    hero.add_animation_frame(sf::IntRect(365, 0, 20, 37));
+    hero.add_animation_frame(sf::IntRect(415, 0, 20, 37));
 
     // Plataforma
     sf::RectangleShape platform(sf::Vector2f(300, 20));
@@ -35,20 +37,31 @@ int main() {
                 window.close();
         }
 
-        // Movimento lateral
+        bool moving = false;
+
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
             hero.move(-200.f * elapsed.asSeconds(), 0);
+            hero.setScale(-2.f, 2.f);  // espelha horizontalmente
+            hero.setOrigin(hero.getGlobalBounds().width, 0);
+            moving = true;
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
             hero.move(200.f * elapsed.asSeconds(), 0);
+            hero.setScale(2.f, 2.f);
+            hero.setOrigin(0.f, 0.f);
+            moving = true;
         }
 
-        // Salto
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
             hero.jump(400.f);
         }
 
-        // Chamar animação (inclui gravidade)
-        hero.animate(elapsed);
+        if (moving || !hero.isOnGround()) {
+            hero.animate(elapsed);
+        } else {
+            hero.resetToIdleFrame();
+            hero.applyGravity(elapsed);
+        }
+
 
         // Detecção de colisão com a plataforma
         sf::FloatRect heroBounds = hero.getGlobalBounds();

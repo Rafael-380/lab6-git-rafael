@@ -4,29 +4,30 @@
 
 class AnimatedSprite : public sf::Sprite {
 public:
-    AnimatedSprite(int fps, const std::string& texturePath);
+    AnimatedSprite(float fps, const std::string& textureFile);
 
-    void add_animation_frame(const sf::IntRect& frameRect);
-    void animate(const sf::Time& elapsed);
+    void add_animation_frame(const sf::IntRect& frame);
+    void animate(sf::Time dt);
+    void applyGravity(sf::Time dt);
 
-    // Física
-    void applyGravity(const sf::Time& elapsed);
-    void jump(float initialJumpSpeed);
-    bool isOnGround() const;
-    void setOnGround(bool onGround);
-
+    void jump(float speed);
     float getVerticalSpeed() const;
+    void setOnGround(bool val);
+    bool isOnGround() const;
+
+    void resetToIdleFrame();
 
 private:
     std::vector<sf::IntRect> frames;
-    float timePerFrame;
-    float timeAccumulator = 0.f;
-    size_t currentFrame = 0;
+    sf::Texture texture;
 
-    // Física
     float verticalSpeed = 0.f;
-    const float gravity = 1000.f; // pixels/second²
+    const float gravity = 980.f; // pixels/s²
     bool onGround = false;
 
-    sf::Texture texture;
+    float fps;
+    sf::Time frameDuration;
+    sf::Time elapsedTime;
+
+    size_t currentFrame = 0;
 };
